@@ -1,56 +1,56 @@
 'use strict';
 
 //create module
-var app = angular.module('brocounting', [ 'ngRoute' ]);
+var app = angular.module('brocounting', [ 'ngRoute', 'ngResource' ]);
 
 //set routes
 app.config(['$routeProvider',
   function ($routeProvider) {
     $routeProvider.
       when('/login', {
-        templateUrl: 'partials/login.html',
+        templateUrl: 'app/partials/login.html',
         controller: 'LoginCtrl'
       }).
       when('/registration', {
-        templateUrl: 'partials/registration.html',
+        templateUrl: 'app/partials/registration.html',
         controller: 'RegistrationCtrl'
-      })
+      }).
       when('/transaction/:transactionId', {
-        templateUrl: 'partials/transaction.html',
+        templateUrl: 'app/partials/transaction.html',
         controller: 'TransactionCtrl'
       }).
-      when('/tags, {
-        templateUrl: 'partials/tags.html',
+      when('/tags', {
+        templateUrl: 'app/partials/tags.html',
         controller: 'TagsCtrl'
       }).
       when('/tag/:tagId', {
-        templateUrl: 'partials/tag.html',
+        templateUrl: 'app/partials/tag.html',
         controller: 'TagCtrl'
       }).
       when('/statistic', {
-        templateUrl: 'partials/statistic.html',
+        templateUrl: 'app/partials/statistic.html',
         controller: 'StatisticCtrl'
       }).
       when('/accounts', {
-        templateUrl: 'partials/accounts.html',
+        templateUrl: 'app/partials/accounts.html',
         controller: 'AccountsCtrl'
       }).
       when('/account/:accountId', {
-        templateUrl: 'partials/account.html',
+        templateUrl: 'app/partials/account.html',
         controller: 'AccountCtrl'
       });
   }]);
 
 //create controllers
-app.controller('MainController', [ '$http', function($http) {
-
+app.controller('MainCtrl', [ '$http', function($http) {
+    console.log("MainCtrl");
 } ]);
 
-app.controller('LoginController', [ '$http', '$scope', function($http, $scope) {
-
+app.controller('LoginCtrl', [ '$http', '$scope', function($http, $scope) {
+    console.log("LoginCtrl");
 } ]);
 
-app.controller('TransactionController', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('TransactionCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
 
 } ]);
 
@@ -77,3 +77,6 @@ app.controller('AccountsCtrl', [ '$http', '$scope', '$routeParams', function ($h
 app.controller('AccountCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
 
 } ]);
+
+
+//set services
