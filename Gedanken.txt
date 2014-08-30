@@ -1,0 +1,14 @@
+Idee: 21.08.2014
+- 3 Konten: Paypal, Sparkasse, Bargeld
+- paypal Daten werden per API abgerufen/aktualisiert
+- Sparkasse wird per csv import aktualisiert -> API vorhanden?
+- Ein- Ausgaben (Transaktionen) mit Bargeld müssen manuell erstellt werden
+- Bei Erstellung analog "Spendee" tagauswahl (mit Bild), Tagauswahl und Beschreibung (Bild eher ni)
+- Transaktionen der anderen beiden Konten könne ebenso getaggt werden
+- mit Zeichenkettenähnlichkeit (zB Levensthein distanz) auch automatische taggung von ungetaggten Transaktionen
+- oder auch bei taggung einen regulären Ausdruck angeben
+- einmalige oder wiederholende Transaktionen im CSV/JSON erkennen? Oder manuelles setzen eines flags zum automatischen erkennen auf wiederholung
+- 
+
+
+!!!!!!!! CSV Format: CSV-CAMT-Format

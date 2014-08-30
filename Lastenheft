@@ -1,0 +1,13 @@
+usecases:
+Sparkasse csv datei  importieren
+Paypal aktualisieren
+Bargeldausgaben erstellen und ändern
+alle transaktionen mit tags/Bemerkungen versehen und diese ändern
+Übersicht mit Statistiken anzeigen
+ - ein- ausgaben zusammenfassung des monats
+ - Stand der Konten
+ - diagramme: todo
+ 
+ 
+ 
+ hauptansicht listet letzte transaktionen auf
