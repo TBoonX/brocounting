@@ -3,6 +3,9 @@
 //create module
 var app = angular.module('brocounting', [ 'ngRoute', 'ngResource' ]);
 
+//create module variables
+var sessionhash = 'blub';
+
 //set routes
 app.config(['$routeProvider',
   function ($routeProvider) {
@@ -55,7 +58,7 @@ app.controller('TransactionCtrl', [ '$http', '$scope', '$routeParams', function 
 } ]);
 
 app.controller('RegistrationCtrl', [ '$http', '$scope', function ($http, $scope, $routeParams) {
-
+    //end with history.back();
 } ]);
 
 app.controller('TagsCtrl', [ '$http', '$scope', function ($http, $scope) {
@@ -80,3 +83,16 @@ app.controller('AccountCtrl', [ '$http', '$scope', '$routeParams', function ($ht
 
 
 //set services
+//all accounts
+app.factory('Accounts', ['$resource',
+  function ($resource){
+    return $resource('service/accounts', {}, {
+      get: {
+          method: 'GET',
+          params: {
+              sessionhash: sessionhash
+          },
+          isArray:true
+      }
+    });
+  }]);
