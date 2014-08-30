@@ -1,0 +1,13 @@
+{
+  "name": "Brocounting",
+  "description": "Initial",
+  "version": "0.0.0",
+  "homepage": "https://github.com/TBoonX/brocounting",
+  "license": "",
+  "private": true,
+  "dependencies": {
+    "angular": "1.2.x",
+    "angular-mocks": "~1.2.x",
+    "angular-route": "~1.2.x"
+  }
+}

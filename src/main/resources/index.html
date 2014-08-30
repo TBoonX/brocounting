@@ -1,14 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="brocounting">
     <head>
         <link rel="stylesheet" type="text/css" href="ressources/css/main.css"
     </head>
         
 	<body>
-		<script type="text/javascript" src="angular.js"></script>
+		<script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-route/angular-route.js"></script>
         <script type="text/javascript" src="app.js"></script>
         
-        <h1>Kurt ist super!</h1>
-        <div>test</div>
+        <!-- set main ctrl -->
+        <div ng-controller="MainController">
+        
+            <!-- use dynamic view -->
+            <div ng-view></div>
+            
+        </div>
 	</body>
 </html>
