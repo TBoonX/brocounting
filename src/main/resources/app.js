@@ -10,9 +10,14 @@ var sessionhash = 'blub';
 app.config(['$routeProvider',
   function ($routeProvider) {
     $routeProvider.
+      when('/', {
+        templateUrl: 'app/partials/main.html',
+        controller: 'MainCtrl'
+      }).
       when('/login', {
         templateUrl: 'app/partials/login.html',
-        controller: 'LoginCtrl'
+        controller: 'LoginCtrl',
+        controllerAs: 'lc'
       }).
       when('/registration', {
         templateUrl: 'app/partials/registration.html',
@@ -41,16 +46,55 @@ app.config(['$routeProvider',
       when('/account/:accountId', {
         templateUrl: 'app/partials/account.html',
         controller: 'AccountCtrl'
+      }).
+      otherwise({
+        redirectTo: '/'
       });
   }]);
 
 //create controllers
-app.controller('MainCtrl', [ '$http', function ($http) {
+app.controller('MainCtrl', [ '$http', '$scope', function ($http, $scope) {
     console.log("MainCtrl");
+    
+    //get sessionhash
+    var sessionhash = lsGet('sessionhash');
+    //go to login if not set yet
+    if (sessionhash === null) {
+        location.hash = '#/login';
+        return;
+    }
+    
+    
+    //fill view
+    //TODO
 } ]);
 
-app.controller('LoginCtrl', [ '$http', '$scope', function ($http, $scope) {
+app.controller('LoginCtrl', [ '$http', '$scope', 'Session', function ($http, $scope, Session) {
     console.log("LoginCtrl");
+    
+    this.credentials = {
+        name: '',
+        password: ''
+    };
+    
+    this.login = function() {
+        console.log(this.credentials);
+        
+        document.getElementsByName("submit")[0].disabled = true;
+        
+        var hash = Session.login({
+            user_name: this.credentials.name,
+            user_password: this.credentials.password
+        }, function(sh) {
+            document.getElementsByName("submit")[0].disabled = false;
+            
+            lsSet("sessionhash", sh);
+            
+            //location.hash = '#/';
+        });
+        
+        console.log(hash);
+    };
 } ]);
 
 app.controller('TransactionCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
@@ -93,6 +137,23 @@ app.factory('Accounts', ['$resource',
               sessionhash: sessionhash
           },
           isArray:true
+      }
+    });
+  }]);
+//session
+app.factory('Session', ['$resource',
+  function ($resource){
+    return $resource('service/session', {}, {
+      login: {
+          method: 'PUT',
+          isArray: false
+      },
+      logout: {
+          method: 'DELETE',
+          params: {
+            sessionhash: function(){return sessionhash;}
+          },
+          isArray: false
       }
     });
   }]);

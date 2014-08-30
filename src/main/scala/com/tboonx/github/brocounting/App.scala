@@ -5,6 +5,12 @@ import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
 import com.mongodb.casbah.MongoClient
 
+// JSON-related libraries
+import org.json4s.{DefaultFormats, Formats}
+
+// JSON handling support from Scalatra
+import org.scalatra.json._
+
 /**
  * @author ${user.name}
  */
@@ -19,16 +25,30 @@ object App {
 
 }
 
-class ScalaraTestFoo extends ScalatraServlet {
+class ScalaraTestFoo extends ScalatraServlet with JacksonJsonSupport {
+  // Sets up automatic case class to JSON output serialization, required by
+  // the JValueResult trait.
+  protected implicit val jsonFormats: Formats = DefaultFormats
+  
+  // Before every action runs, set the content type to be in JSON format.
+  before() {
+    contentType = formats("json")
+  }
+  
   get("/") {
     <html>
 	Hello to scalatra
 	</html>
   }
   
-  get("/json-page") {
-	  
-	  "<json-response>Hello to scalatra</json-resonse>"
+  case class User(user_name: String, user_password: String)
+  put("/session") {
+    
+    val user = parsedBody.extract[User]
+    
+    printf("username: "+user.user_name);
+    
+    "session123"
   }
   
   get("/hello_mongo") {
@@ -41,6 +61,6 @@ class ScalaraTestFoo extends ScalatraServlet {
  
 class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext) {
-    context.mount(new ScalaraTestFoo, "/*")
+    context.mount(new ScalaraTestFoo, "/service/*")
   }
 }
