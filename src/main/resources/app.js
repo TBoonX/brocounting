@@ -42,11 +42,11 @@ app.config(['$routeProvider',
   }]);
 
 //create controllers
-app.controller('MainCtrl', [ '$http', function($http) {
+app.controller('MainCtrl', [ '$http', function ($http) {
     console.log("MainCtrl");
 } ]);
 
-app.controller('LoginCtrl', [ '$http', '$scope', function($http, $scope) {
+app.controller('LoginCtrl', [ '$http', '$scope', function ($http, $scope) {
     console.log("LoginCtrl");
 } ]);
 
@@ -54,11 +54,11 @@ app.controller('TransactionCtrl', [ '$http', '$scope', '$routeParams', function 
 
 } ]);
 
-app.controller('RegistrationCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('RegistrationCtrl', [ '$http', '$scope', function ($http, $scope, $routeParams) {
 
 } ]);
 
-app.controller('TagsCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('TagsCtrl', [ '$http', '$scope', function ($http, $scope) {
 
 } ]);
 
@@ -66,11 +66,11 @@ app.controller('TagCtrl', [ '$http', '$scope', '$routeParams', function ($http, 
 
 } ]);
 
-app.controller('StatisticCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('StatisticCtrl', [ '$http', '$scope', function ($http, $scope) {
 
 } ]);
 
-app.controller('AccountsCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('AccountsCtrl', [ '$http', '$scope', function ($http, $scope) {
 
 } ]);
 
