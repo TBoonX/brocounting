@@ -5,6 +5,9 @@ import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
 import com.mongodb.casbah.MongoClient
 import com.tboonx.github.brocounting.model.User
+import com.novus.salat._
+import com.novus.salat.annotations._
+import com.novus.salat.global._
 
 // JSON-related libraries
 import org.json4s.{DefaultFormats, Formats}
@@ -30,7 +33,8 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport {
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
   protected implicit val jsonFormats: Formats = DefaultFormats
-  
+  val mongoClient = MongoClient("localhost", 27017)
+
   // Before every action runs, set the content type to be in JSON format.
   before() {
     contentType = formats("json")
@@ -44,19 +48,16 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport {
   }
   
   get("/hello_mongo") {
-    val mongoClient = MongoClient("localhost", 27017)
     val db = mongoClient("brocounting_test")
     val firstObject = db("user") findOne()	 	
     firstObject.get
   }
 
   put("/session") {
-
     val user = parsedBody.extract[User]
-
-    printf("username: "+user.user_name);
-
-    "session123"
+    val db = mongoClient("brocounting_test")
+    db("user").insert(grater[User].asDBObject(user))
+    println("finshed inserting testuser: "+user.user_name);
   }
 }
  
