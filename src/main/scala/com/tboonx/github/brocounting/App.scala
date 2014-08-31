@@ -5,7 +5,7 @@ import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
 import org.scalatra.CorsSupport
 import com.mongodb.casbah.MongoClient
-import com.tboonx.github.brocounting.model.User
+import com.tboonx.github.brocounting.model._
 import com.novus.salat._
 import com.novus.salat.annotations._
 import com.novus.salat.global._
@@ -65,6 +65,8 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
     val db = mongoClient("brocounting_test")
     db("user").insert(grater[User].asDBObject(user))
     println("finshed inserting testuser: "+user.user_name);
+    
+    Session("session123")
   }
 }
  

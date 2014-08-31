@@ -5,3 +5,4 @@ package com.tboonx.github.brocounting.model
  */
 
 case class User(user_name: String, user_password: String)
+case class Session(response: String)
