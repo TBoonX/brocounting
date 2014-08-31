@@ -18,7 +18,8 @@ app.config(['$routeProvider',
     $routeProvider.
       when('/', {
         templateUrl: 'app/partials/main.html',
-        controller: 'MainCtrl'
+        controller: 'MainCtrl',
+        controllerAs: 'mc'
       }).
       when('/login', {
         templateUrl: 'app/partials/login.html',
@@ -59,7 +60,7 @@ app.config(['$routeProvider',
   }]);
 
 //create controllers
-app.controller('MainCtrl', [ '$http', '$scope', function ($http, $scope) {
+app.controller('MainCtrl', [ '$http', '$scope', '$rootScope', function ($http, $scope, $rootScope) {
     console.log("MainCtrl");
     
     //get sessionhash
@@ -157,6 +158,10 @@ app.controller('AccountCtrl', [ '$http', '$scope', '$routeParams', function ($ht
 
 
 //set services
+//account manager
+app.factory('AccountManager', function('Accounts'){
+    
+});
 //all accounts
 app.factory('Accounts', ['$resource',
   function ($resource){
