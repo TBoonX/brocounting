@@ -22,7 +22,7 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<encoding>UTF-8</encoding>
 		<scala.tools.version>2.10</scala.tools.version>
-		<scala.version>2.10.0</scala.version>
+		<scala.version>${scala.tools.version}.0</scala.version>
 		<scalatra.version>2.3.0</scalatra.version>
 	</properties>
 
@@ -35,32 +35,38 @@
 
 		<dependency>
 			<groupId>org.scalatra</groupId>
-			<artifactId>scalatra_2.10</artifactId>
+			<artifactId>scalatra_${scala.tools.version}</artifactId>
 			<version>${scalatra.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
-			<artifactId>casbah-core_2.10</artifactId>
+			<artifactId>casbah-core_${scala.tools.version}</artifactId>
 			<version>2.7.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.scalatra</groupId>
-			<artifactId>scalatra-specs2_2.10</artifactId>
+			<artifactId>scalatra-specs2_${scala.tools.version}</artifactId>
 			<version>${scalatra.version}</version>
 			<scope>test</scope>
 		</dependency>
 
         <dependency>
             <groupId>org.scalatra</groupId>
-            <artifactId>scalatra-json_2.10</artifactId>
+            <artifactId>scalatra-json_${scala.tools.version}</artifactId>
             <version>${scalatra.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>com.novus</groupId>
+            <artifactId>salat-core_${scala.tools.version}</artifactId>
+            <version>1.9.9</version>
+        </dependency>
+
+        <dependency>
 		    <groupId>org.json4s</groupId>
-		    <artifactId>json4s-jackson_2.10</artifactId>
+		    <artifactId>json4s-jackson_${scala.tools.version}</artifactId>
 		    <version>3.2.10</version>
 		</dependency>
 
