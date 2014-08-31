@@ -3,6 +3,7 @@ package com.tboonx.github.brocounting
 import org.scalatra.ScalatraServlet
 import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
+import org.scalatra.CorsSupport
 import com.mongodb.casbah.MongoClient
 import com.tboonx.github.brocounting.model.User
 import com.novus.salat._
@@ -29,11 +30,17 @@ object App {
 
 }
 
-class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport {
+class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with CorsSupport {
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
   protected implicit val jsonFormats: Formats = DefaultFormats
   val mongoClient = MongoClient("localhost", 27017)
+  
+  options("/*") {
+	  response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
+	  response.setHeader("Access-Control-Allow-Origin", "*");
+	  response.setHeader("Access-Control-Allow-Methods", request.getHeader("Access-Control-Request-Method"))
+  }
 
   // Before every action runs, set the content type to be in JSON format.
   before() {

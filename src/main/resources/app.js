@@ -72,7 +72,29 @@ app.controller('MainCtrl', [ '$http', '$scope', function ($http, $scope) {
     
     
     //fill view
-    //TODO
+    this.transactions = [];
+    
+    //test
+    this.transactions = [
+        {
+            id: 'nr1',
+            agent: 'kurt',
+            account: 'giro',
+            amount: 12.95,
+            date: new Date(),
+            note: 'Rewe',
+            tag: '1'
+        },
+        {
+            id: 'nr2',
+            agent: 'kurt',
+            account: 'giro',
+            amount: 20.0,
+            date: new Date(),
+            note: 'test',
+            tag: '2'
+        }
+    ];
 } ]);
 
 app.controller('LoginCtrl', [ '$http', '$scope', 'Session', function ($http, $scope, Session) {
@@ -98,7 +120,7 @@ app.controller('LoginCtrl', [ '$http', '$scope', 'Session', function ($http, $sc
             
             lsSet("sessionhash", sh);
             
-            //location.hash = '#/';
+            location.hash = '#/';
         });
         
         console.log(hash);
