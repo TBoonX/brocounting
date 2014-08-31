@@ -3,6 +3,12 @@
 //create module
 var app = angular.module('brocounting', [ 'ngRoute', 'ngResource' ]);
 
+app.config(['$httpProvider', function($httpProvider) {
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    }
+]);
+
 //create module variables
 var sessionhash = 'blub';
 
@@ -88,6 +94,8 @@ app.controller('LoginCtrl', [ '$http', '$scope', 'Session', function ($http, $sc
         }, function(sh) {
             document.getElementsByName("submit")[0].disabled = false;
             
+            console.log(sh);
+            
             lsSet("sessionhash", sh);
             
             //location.hash = '#/';
@@ -143,7 +151,7 @@ app.factory('Accounts', ['$resource',
 //session
 app.factory('Session', ['$resource',
   function ($resource){
-    return $resource('service/session', {}, {
+    return $resource('http://127.0.0.1:8080/service/session/', {}, {
       login: {
           method: 'PUT',
           isArray: false
