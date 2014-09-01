@@ -1,13 +1,13 @@
 package com.tboonx.github.brocounting
 
+import com.mongodb.casbah.commons.{MongoDBObjectBuilder, MongoDBObject}
 import org.scalatra.ScalatraServlet
 import javax.servlet.ServletContext
 import org.scalatra.LifeCycle
 import org.scalatra.CorsSupport
-import com.mongodb.casbah.MongoClient
+import com.mongodb.casbah.{Imports, MongoCollection, MongoDB, MongoClient}
 import com.tboonx.github.brocounting.model._
 import com.novus.salat._
-import com.novus.salat.annotations._
 import com.novus.salat.global._
 
 // JSON-related libraries
@@ -16,29 +16,18 @@ import org.json4s.{DefaultFormats, Formats}
 // JSON handling support from Scalatra
 import org.scalatra.json._
 
-/**
- * @author ${user.name}
- */
-object App {
-  
-  def foo(x : Array[String]) = x.foldLeft("")((a,b) => a + b)
-  
-  def main(args : Array[String]) {
-    println( "Hello World!" )
-    println("concat arguments = " + foo(args))
-  }
-
-}
-
 class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with CorsSupport {
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
   protected implicit val jsonFormats: Formats = DefaultFormats
-  val mongoClient = MongoClient("localhost", 27017)
+  val mongoHost = Option(System.getProperty("mongohost")) getOrElse "localhost"
+  val mongoPort : Int = Option(System.getProperty("mongoport")) getOrElse("27017") toInt
+  val mongoDbName = Option(System.getProperty("mongodb")) getOrElse "brocounting"
+  private val db: MongoDB = MongoClient(mongoHost, mongoPort).apply(mongoDbName)
   
   options("/*") {
 	  response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
-	  response.setHeader("Access-Control-Allow-Origin", "*");
+	  response.setHeader("Access-Control-Allow-Origin", "*")
 	  response.setHeader("Access-Control-Allow-Methods", request.getHeader("Access-Control-Request-Method"))
   }
 
@@ -53,20 +42,33 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
 	    Hello to scalatra
 	</html>
   }
-  
+
+  put("/user/upsert"){
+    println(parsedBody)
+    val addableUser: User = parsedBody.extract[User]
+    val addableUserAsDbObject: Imports.DBObject = grater[User].asDBObject(addableUser)
+    db("user").update(MongoDBObject("_id" -> addableUser.name), addableUserAsDbObject, true)
+  }
+
+  delete("/user/delete") {
+    val deletableUser: User = parsedBody.extract[User]
+    val users = db("user")
+    val deletableUserAsMongoObject: Imports.DBObject = grater[User].asDBObject(deletableUser)
+    val deletableInDB: MongoCollection#T = users.findOne(deletableUserAsMongoObject).get
+    if(deletableUser.password == deletableInDB.get("password")){
+      users.remove(deletableUserAsMongoObject)
+    }
+  }
+
   get("/hello_mongo") {
-    val db = mongoClient("brocounting_test")
-    val firstObject = db("user") findOne()	 	
+    val firstObject = db("user") findOne()
     firstObject.get
   }
 
   put("/session") {
     val user = parsedBody.extract[User]
-    val db = mongoClient("brocounting_test")
     db("user").insert(grater[User].asDBObject(user))
-    println("finshed inserting testuser: "+user.user_name);
-    
-    Session("session123")
+    println("finshed inserting testuser: "+user.name)
   }
 }
  
