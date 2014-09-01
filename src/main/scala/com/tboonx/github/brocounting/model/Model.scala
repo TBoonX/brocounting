@@ -22,3 +22,4 @@ case class Transaction(agent : String, account : String, amount : BigDecimal, da
 case class Account(@Key("_id") bic : String, name : String, balance : BigDecimal, kind : AccountKind, miscellaneous : Option[Map[String, String]])
 case class Session(@Key("_id") hash: String)
 case class Tag(@Key("_id") name : String, icon : Array[Byte], enabled : Boolean)
+case class Response(response: Boolean)

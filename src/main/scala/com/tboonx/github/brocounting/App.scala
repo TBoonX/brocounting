@@ -69,6 +69,15 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
     val user = parsedBody.extract[User]
     db("user").insert(grater[User].asDBObject(user))
     println("finshed inserting testuser: "+user.name)
+
+    new Session("session123")
+  }
+
+  get("/session") {
+    params("hash") match {
+      case "session123" => new Response(true)
+      case _ => new Response(false)
+    }
   }
 }
  
