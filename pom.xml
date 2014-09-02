@@ -70,6 +70,12 @@
 		    <version>3.2.10</version>
 		</dependency>
 
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-scalaz_${scala.tools.version}</artifactId>
+            <version>3.2.10</version>
+        </dependency>
+
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
