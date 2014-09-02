@@ -12,3 +12,7 @@ div {
 .errormessage {
     color: red;
 }
+
+.table {
+    width: 100%;
+}

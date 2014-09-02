@@ -1,7 +1,22 @@
 //create module
-var app = angular.module('brocountingServices', ['ngRoute', 'ngResource', 'ngStorage']);
+var app = angular.module('brocountingServices', ['ngResource', 'ngStorage']);
 
 var serviceURL = 'http://127.0.0.1:8080/service';
+
+var getArrayFromResource = function(res) {
+    var i = 0;
+    var ret = [];
+    
+    while (true) {
+        if (res[i] === undefined)
+            return ret;
+        
+        ret.push(res[i]);
+        i= i+1;
+    }
+    
+    return ret;
+};
 
 //account manager
 //app.factory('AccountManager', function('Accounts'){
@@ -195,22 +210,86 @@ app.factory('StatisticRes', ['$resource', '$localStorage',
 //
 
 //loading all data - init
-app.service('InitialLoad', ['$localStorage', '$rootScope',
-    function ($localStorage, $rootScope) {
+app.service('InitialLoad', ['$localStorage', '$rootScope', 'AccountRes', 'TagRes', 'TransactionRes', 
+    function ($localStorage, $rootScope, AccountRes, TagRes, TransactionRes) {
         console.log('initial load of all data');
 
         var hash = $localStorage.hash;
 
         //get Accounts
+        this.getAccounts = function() {
+            console.log('get all accounts');
+            
+            AccountRes.getAll({},
+            function (value, responseHeaders) {
+                console.log('success');
 
+                console.log(value);
+
+                var accounts = getArrayFromResource(value.response);
+                
+                $localStorage.allAccounts = accounts;
+            },
+            function (httpResponse) {
+                console.log('failure');
+
+                console.log(httpResponse);
+                
+                //TODO
+            });
+        };
 
         //get Tags
+        this.getTags = function() {
+            console.log('get all tags');
+            
+            TagRes.get({},
+            function (value, responseHeaders) {
+                console.log('success');
 
+                console.log(value);
+
+                var tags = getArrayFromResource(value.response);
+                
+                $localStorage.tags = tags;
+            },
+            function (httpResponse) {
+                console.log('failure');
+
+                console.log(httpResponse);
+                
+                //TODO
+            });
+        };
 
         //get Transactions
+        this.getTransactions = function() {
+            console.log('get all transactions');
+            
+            TransactionRes.get({},
+            function (value, responseHeaders) {
+                console.log('success');
 
+                console.log(value);
 
+                var transactions = getArrayFromResource(value.response);
+                
+                $localStorage.AllTransactions = transactions;
+            },
+            function (httpResponse) {
+                console.log('failure');
 
+                console.log(httpResponse);
+                
+                //TODO
+            });
+        };
+
+        this.start = function() {
+            this.getAccounts();
+            this.getTags();
+            this.getTransactions();
+        }
 }]);
 
 

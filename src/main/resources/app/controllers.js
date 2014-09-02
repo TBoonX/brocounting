@@ -4,8 +4,8 @@ var app = angular.module('brocountingCtrl', ['ngRoute', 'ngResource', 'ngStorage
 //create constants:
 //app.value('clientId', 'a12345654321x');
 
-app.controller('MainCtrl', ['$http', '$scope', '$rootScope', '$location', 'SessionRes',
-    function ($http, $scope, $rootScope, $location, SessionRes) {
+app.controller('MainCtrl', ['$http', '$scope', '$rootScope', '$location', 'SessionRes', 'InitialLoad', 
+    function ($http, $scope, $rootScope, $location, SessionRes, InitialLoad) {
         console.log("MainCtrl");
         //delete $scope.$storage.hash;
         //get hash
@@ -32,7 +32,7 @@ app.controller('MainCtrl', ['$http', '$scope', '$rootScope', '$location', 'Sessi
                 if (value.response === undefined || value.response === false)
                     onError();
                 else {
-
+                    InitialLoad.start();
                 }
             },
             function (httpResponse) {

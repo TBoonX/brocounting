@@ -1,5 +1,6 @@
 package com.tboonx.github.brocounting
 
+import java.util.NoSuchElementException
 import javax.servlet.ServletContext
 
 import com.mongodb.casbah.commons.MongoDBObject
@@ -108,9 +109,30 @@ class UserService extends ScalaraRestfulApiDef {
   }
 }
 
+class AccountService extends ScalaraRestfulApiDef {
+
+  get("/") {
+    params("hash") match {
+      case "session123" => {
+
+        try {
+          val account = params("account")
+          //get this account
+        }
+        catch {
+          //get all accounts
+          case e: NoSuchElementException => List(new Account("giro123", "Kurt", 1200, AccountKind.GIRO_ACOUNT, Map[String, String]())) ++ List(new Account("paypal1", "Kurt", 23, AccountKind.PAYPAL, Map[String, String]())) ++List(new Account("portmonai", "Kurt", 55, AccountKind.CASH, Map[String, String]()))
+        }
+      }
+      case _ => Some
+    }
+  }
+}
+
 class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext) {
     context.mount(new ScalaraRestfulApiDef, "/service/*")
-    context.mount(new UserService, "/user/*")
+    context.mount(new UserService, "/service/user/*")
+    context.mount(new AccountService, "/service/account/*")
   }
 }

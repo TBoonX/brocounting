@@ -1,7 +1,7 @@
 'use strict';
 
 //create module
-var app = angular.module('brocounting', [ 'ngRoute', 'ngStorage', 'brocountingCtrl', 'brocountingServices' ]);
+var app = angular.module('brocounting', [ 'ngRoute', 'ngStorage', 'brocountingCtrl', 'brocountingServices', 'brocountingDirectives' ]);
 
 //CORS
 app.config(['$httpProvider', function($httpProvider) {
