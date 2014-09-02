@@ -21,3 +21,5 @@ object Transaction {
 case class Session(@Key("_id") hash: String)
 
 case class Tag(@Key("_id") name: String, icon: Array[Byte], enabled: Boolean)
+
+case class Response(response: Boolean)

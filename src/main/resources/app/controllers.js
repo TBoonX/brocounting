@@ -1,24 +1,50 @@
 //create module
-var app = angular.module('brocountingCtrl', [ 'ngRoute', 'ngResource', 'ngStorage' ]);
+var app = angular.module('brocountingCtrl', ['ngRoute', 'ngResource', 'ngStorage']);
 
 //create constants:
 //app.value('clientId', 'a12345654321x');
 
-app.controller('MainCtrl', [ '$http', '$scope', '$rootScope', '$location', function ($http, $scope, $rootScope, $location) {
-    console.log("MainCtrl");
-    //delete $scope.$storage.sessionhash;
-    //get sessionhash
-    var sessionhash = $scope.$storage.sessionhash;
-    //go to login if not set yet
-    if (sessionhash === null || sessionhash === undefined) {
-        $location.path('/login');
-        return;
-    }
-    
-    
+app.controller('MainCtrl', ['$http', '$scope', '$rootScope', '$location', 'SessionRes',
+    function ($http, $scope, $rootScope, $location, SessionRes) {
+        console.log("MainCtrl");
+        //delete $scope.$storage.hash;
+        //get hash
+        var hash = $scope.$storage.hash;
+        //go to login if not set yet
+        if (hash === null || hash === undefined) {
+            $location.path('/login');
+            return;
+        }
+
+        var onError = function () {
+
+            //TODO: show hint
+
+            $location.path('/login');
+        };
+
+        //check hash
+        SessionRes.isValid({}, function (value, responseHeaders) {
+                console.log('success');
+
+                console.log(value);
+
+                if (value.response === undefined || value.response === false)
+                    onError();
+                else {
+
+                }
+            },
+            function (httpResponse) {
+                console.log('failure');
+
+                onError();
+            });
+
+        /*
     //fill view
     this.transactions = [];
-    
+
     //test
     this.transactions = [
         {
@@ -40,43 +66,52 @@ app.controller('MainCtrl', [ '$http', '$scope', '$rootScope', '$location', funct
             tag: '2'
         }
     ];
-} ]);
+    */
+}]);
 
-app.controller('LoginCtrl', [ '$rootScope', 'Login', function ($rootScope, Login) {
-    console.log("LoginCtrl");
-    
-    $rootScope.credentials = {
-        name: '',
-        password: ''
-    };
-    
-    this.login = Login.login;
-} ]);
+app.controller('LoginCtrl', ['$rootScope', 'Login',
+    function ($rootScope, Login) {
+        console.log("LoginCtrl");
 
-app.controller('TransactionCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+        $rootScope.credentials = {
+            name: '',
+            password: ''
+        };
 
-} ]);
+        this.login = Login.start;
+}]);
 
-app.controller('RegistrationCtrl', [ '$http', '$scope', function ($http, $scope, $routeParams) {
-    //end with history.back();
-} ]);
+app.controller('TransactionCtrl', ['$http', '$scope', '$routeParams',
+    function ($http, $scope, $routeParams) {
 
-app.controller('TagsCtrl', [ '$http', '$scope', function ($http, $scope) {
+}]);
 
-} ]);
+app.controller('RegistrationCtrl', ['$http', '$scope',
+    function ($http, $scope, $routeParams) {
+        //end with history.back();
+}]);
 
-app.controller('TagCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('TagsCtrl', ['$http', '$scope',
+    function ($http, $scope) {
 
-} ]);
+}]);
 
-app.controller('StatisticCtrl', [ '$http', '$scope', function ($http, $scope) {
+app.controller('TagCtrl', ['$http', '$scope', '$routeParams',
+    function ($http, $scope, $routeParams) {
 
-} ]);
+}]);
 
-app.controller('AccountsCtrl', [ '$http', '$scope', function ($http, $scope) {
+app.controller('StatisticCtrl', ['$http', '$scope',
+    function ($http, $scope) {
 
-} ]);
+}]);
 
-app.controller('AccountCtrl', [ '$http', '$scope', '$routeParams', function ($http, $scope, $routeParams) {
+app.controller('AccountsCtrl', ['$http', '$scope',
+    function ($http, $scope) {
 
-} ]);
+}]);
+
+app.controller('AccountCtrl', ['$http', '$scope', '$routeParams',
+    function ($http, $scope, $routeParams) {
+
+}]);

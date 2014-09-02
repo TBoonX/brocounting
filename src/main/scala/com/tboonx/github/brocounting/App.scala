@@ -23,7 +23,11 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
   private val mongoDbName = Option(System.getProperty("mongodb")) getOrElse "brocounting"
   protected val db: MongoDB = MongoClient(mongoHost, mongoPort).apply(mongoDbName)
   
-  options("/*") {
+  options("/*") {  put("/session") {
+    val user = parsedBody.extract[User]
+    db("user").insert(grater[User].asDBObject(user))
+    println("finshed inserting testuser: "+user.name)
+  }
 	  response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
 	  response.setHeader("Access-Control-Allow-Origin", "*")
 	  response.setHeader("Access-Control-Allow-Methods", request.getHeader("Access-Control-Request-Method"))
@@ -46,10 +50,24 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
     firstObject.get
   }
 
+  get("/hello_mongo") {
+    val firstObject = db("user") findOne()
+    firstObject.get
+  }
+
   put("/session") {
     val user = parsedBody.extract[User]
     db("user").insert(grater[User].asDBObject(user))
     println("finshed inserting testuser: "+user.name)
+
+    new Session("session123")
+  }
+
+  get("/session") {
+    params("hash") match {
+      case "session123" => new Response(true)
+      case _ => new Response(false)
+    }
   }
 }
 

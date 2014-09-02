@@ -21,5 +21,14 @@ project/plugins/project/
 .project
 .settings/
 
+#Inteli
+brocounting.iml
+
 #Bower
 src/main/resources/bower_components
+
+#NPM
+src/main/resources/node_modules
+
+#ka
+.directory
