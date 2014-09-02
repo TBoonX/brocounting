@@ -46,7 +46,7 @@ app.factory('SessionRes', ['$resource', '$localStorage',
   function ($resource, $localStorage) {
         return $resource(serviceURL+'/session', {}, {
             login: {
-                method: 'PUT',
+                method: 'POST',
                 isArray: false
             },
             logout: {
@@ -75,7 +75,7 @@ app.factory('TagRes', ['$resource', '$localStorage',
   function ($resource, $localStorage) {
         return $resource(serviceURL+'/tag', {}, {
             create: {
-                method: 'PUT',
+                method: 'POST',
                 params: {
                     hash: function () {
                         return $localStorage.hash;
@@ -99,7 +99,7 @@ app.factory('TagRes', ['$resource', '$localStorage',
                         return $localStorage.hash;
                     }
                 },
-                isArray: true
+                isArray: false
             },
             get: {
                 method: 'GET',
@@ -118,11 +118,70 @@ app.factory('UserRes', ['$resource', '$localStorage',
   function ($resource, $localStorage) {
         return $resource(serviceURL+'/user', {}, {
             create: {
-                method: 'PUT',
+                method: 'POST',
                 isArray: false
             },
             remove: {
                 method: 'DELETE',
+                params: {
+                    hash: function () {
+                        return $localStorage.hash;
+                    }
+                },
+                isArray: false
+            }
+        });
+  }]);
+
+//transaction ressource
+app.factory('TransactionRes', ['$resource', '$localStorage',
+  function ($resource, $localStorage) {
+        return $resource(serviceURL+'/transaction', {}, {
+            create: {
+                method: 'POST',
+                params: {
+                    hash: function () {
+                        return $localStorage.hash;
+                    }
+                },
+                isArray: false
+            },
+            update: {
+                method: 'PUT',
+                params: {
+                    hash: function () {
+                        return $localStorage.hash;
+                    }
+                },
+                isArray: false
+            },
+            remove: {
+                method: 'DELETE',
+                params: {
+                    hash: function () {
+                        return $localStorage.hash;
+                    }
+                },
+                isArray: false
+            },
+            get: {
+                method: 'GET',
+                params: {
+                    hash: function () {
+                        return $localStorage.hash;
+                    }
+                },
+                isArray: true
+            }
+        });
+  }]);
+
+//statistic ressource
+app.factory('StatisticRes', ['$resource', '$localStorage',
+  function ($resource, $localStorage) {
+        return $resource(serviceURL+'/statistic', {}, {
+            get: {
+                method: 'GET',
                 params: {
                     hash: function () {
                         return $localStorage.hash;

@@ -23,6 +23,7 @@ project/plugins/project/
 
 #Inteli
 brocounting.iml
+.idea/
 
 #Bower
 src/main/resources/bower_components
