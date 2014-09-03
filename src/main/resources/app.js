@@ -41,7 +41,8 @@ app.config(['$routeProvider',
       }).
       when('/transaction/:transactionId', {
         templateUrl: 'app/partials/transaction.html',
-        controller: 'TransactionCtrl'
+        controller: 'TransactionCtrl',
+        controllerAs: 'tc'
       }).
       when('/tags', {
         templateUrl: 'app/partials/tags.html',

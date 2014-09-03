@@ -1,0 +1,20 @@
+<h1>Transaktion {{transaction.id}}</h1>
+<hr>
+
+<form name="transactionForm" ng-submit="transactionForm.$valid && tc.save()" novalidate>
+    <fieldset class="form-group">
+        <label for="trans_account">Konto:</label>
+        <input id="trans_account" type="text" name="account" ng-model="" title="Konto" ng-show="transaction.id" />
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="trans_date">Datum:</label>
+        <input id="trans_date" type="date" name="date" ng-model="transaction.dated" title="Datum" required/>
+    </fieldset>
+    <fieldset class="form-group">
+        <input type="submit" value="Login" name="submit" />
+    </fieldset>
+</form>
+
+<input>
+    <button class="saveBtn" title="Speichern" name="saveBtn" type="button" ng-onClick="" value="Speichern" />
+</input>

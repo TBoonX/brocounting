@@ -1,0 +1,26 @@
+<h1>Tagmanagement</h1>
+<hr>
+
+<div class="list-group" name="tagsDiv">
+    <table class="table">
+        <div class="list-group-item" ng-repeat="tag in $storage.tags">
+            <tr>
+                <td>
+                    <img ng-src="ressources/images/{{tag.tagurl}}" />
+                </td>
+                <td>
+                    {{tag.name}}
+                </td>
+                <td>
+                    <input>
+                        <option title="Aktiviert" label="Aktiviert" class="radioBtn" name="enabledRadio" selected />
+                    </input>
+                </td>
+            </tr>
+        </div>  
+    </table>
+</div>
+
+<input>
+    <button class="plusBtn" title="Hinzufuegen" name="plusBtn" type="button" ng-onClick="" value="Speichern" />
+</input>

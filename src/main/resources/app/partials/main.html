@@ -1,22 +1,22 @@
-<div name="accounts">
+<div name="accountsDiv">
     <hr>
     <marquee scrollamount="2" scrolldelay="7" direction="left">
       <div ng-repeat="account in $storage.allAccounts"><b>{{account.bic}}:</b> {{account.balance| currency}}     </div>
     </marquee>
     <hr>
+</div>
     
-    <div class="list-group">
-        <div class="list-group-item" ng-repeat="transaction in $storage.allTransactions">
-            <table class="table">
-                <tr>
-                    <td>
-                        <div ng-repeat="tagName in transacion.tagNames">
-                            <tag-icon tag-name="{{tagName}}" />{{tagName}}, {{transaction.date}}, {{transaction.amount | currency}}
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <br>
-        </div>
+<div class="list-group" name="transactionsDiv">
+    <div class="list-group-item" ng-repeat="transaction in $storage.allTransactions">
+        <table class="table">
+            <tr>
+                <td>
+                    <div ng-repeat="tagName in transacion.tagNames">
+                        <tag-icon tag-name="{{tagName}}" />{{tagName}}, {{transaction.date}}, {{transaction.amount | currency}}
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br>
     </div>
 </div>

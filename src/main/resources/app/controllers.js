@@ -81,9 +81,25 @@ app.controller('LoginCtrl', ['$rootScope', 'Login',
         this.login = Login.start;
 }]);
 
-app.controller('TransactionCtrl', ['$http', '$scope', '$routeParams',
-    function ($http, $scope, $routeParams) {
+app.controller('TransactionCtrl', ['$http', '$scope', '$routeParams', '$localStorage',
+    function ($http, $scope, $routeParams, $localStorage) {
+        var transactionId = $routeParams.transactionId;
+        $scope.transaction = {};
+        
+        //find transaction
+        var i = 0;
 
+        while (i < $localStorage.allTransactions.length) {
+            if ($localStorage.allTransactions[i].id === transactionId) {
+                $scope.transaction = $localStorage.allTransactions[i];
+                break;
+            }
+            i = i+1;
+        }
+        
+        this.save = function() {
+            //TODO   
+        }
 }]);
 
 app.controller('RegistrationCtrl', ['$http', '$scope',

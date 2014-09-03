@@ -6,7 +6,7 @@ app.directive('tagIcon', ['$localStorage', function($localStorage) {
         restrict: 'E',
         transclude: true,
         scope: {
-            name: '@tagName'
+            tagName: '@tagName'
         },
         template: '<img ng-src="{{tagurl}}" />',
         controller: function($scope, $localStorage) {
@@ -17,7 +17,7 @@ app.directive('tagIcon', ['$localStorage', function($localStorage) {
             angular.forEach(tags, function(value, key) {
                 var tag = value;
                 
-                if (tag.name == $scope.name)
+                if (tag.name == $scope.tagName)
                     $scope.tagurl = 'ressources/images/'+tag.icon;
             });
         }
