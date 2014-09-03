@@ -127,12 +127,14 @@ class AccountService extends ScalaraRestfulApiDef {
       case _ => Some
     }
   }
+
 }
 
 class ScalatraBootstrap extends LifeCycle {
-  override def init(context: ServletContext) {
-    context.mount(new ScalaraRestfulApiDef, "/service/*")
-    context.mount(new UserService, "/service/user/*")
-    context.mount(new AccountService, "/service/account/*")
+  override def init(context: ServletContext): Unit = {
+    val servicePrefix = "/service"
+    context.mount(new ScalaraRestfulApiDef, "%s/*".format(servicePrefix))
+    context.mount(new UserService, "%s/user/*".format(servicePrefix))
+    context.mount(new AccountService, "%s/account/*".format(servicePrefix))
   }
 }
