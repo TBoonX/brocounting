@@ -1,7 +1,9 @@
 package com.github.tboonx
 
 import com.mongodb.DBObject
-import com.mongodb.casbah.Imports
+import com.mongodb.casbah.{commons, Imports}
+import com.mongodb.casbah.Imports._
+import com.mongodb.casbah.commons.{MongoDBObject, MongoDBListBuilder}
 import com.novus.salat._
 import com.novus.salat.global._
 import com.tboonx.github.brocounting.model._
@@ -15,6 +17,9 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class TestModel extends FunSpec {
+
+  DateTimeZone.setDefault(DateTimeZone.UTC)
+  val fixtureTime: DateTime = new DateTime(1409585982218L)
 
   describe("The typehint dateTimeHint"){
     val testable = model.dateTimeHint
@@ -41,7 +46,7 @@ class TestModel extends FunSpec {
 
   describe("A user instance") {
 
-    val parsedInput: JValue = JsonMethods.parse("{\"name\":\"dab\",\"password\":\"123456\", \"session\" : {\"hash\" : \"asdf\"}}", true)
+    val parsedInput: JValue = JsonMethods.parse("{\"name\":\"dab\",\"password\":\"12345678\" }", true)
 
     it("should be compilable to json without sepecifying an session hash"){
       val fixtureWithoutHash = parsedInput.removeField( (value : JField) =>  {
@@ -49,29 +54,27 @@ class TestModel extends FunSpec {
       })
       val user: User = Extraction.extract[User](fixtureWithoutHash)
       assert("dab" === user.name)
-      assert("123456" === user.password)
+      assert("12345678" === user.password)
       assert(List() === user.tags)
-      assert(user.session.isInstanceOf[Option[Session]])
     }
 
     it("should be serializable to a mongo object without session and tags"){
-      val user : User = new User("dab", "123456", List(), Option[Session](null))
-      val expected = "{ \"_id\" : \"dab\" , \"password\" : \"123456\" , \"tags\" : [ ]}"
+      val user : User = new User("dab", "12345678", List())
+      val expected = "{ \"_id\" : \"dab\" , \"password\" : \"12345678\" , \"tags\" : [ ]}"
       assert(expected === grater[User].asDBObject(user).toString)
     }
 
     it("should be compilable to json using scalatra-json") {
       val user: User = Extraction.extract[User](parsedInput)
       assert(user.name === "dab")
-      assert(user.password === "123456")
+      assert(user.password === "12345678")
       assert(user.tags === List())
-      assert(user.session.get === new Session("asdf"))
     }
 
     it("should be serializable to a mongo db object using salat"){
-      val user : User = new User("dan", "123456", List(new Tag("eat", Array(), true), new Tag("sleep", Array(), false), new Tag("code", Array(), false)), Option(new Session("myRandomlyGeneratedSessionHash")))
+      val user : User = new User("dan", "12345678", List(new Tag("eat", Array(), true), new Tag("sleep", Array(), false), new Tag("code", Array(), false)))
       val userDbObject: Imports.DBObject = grater[User].asDBObject(user)
-      val expected = "{ \"_id\" : \"dan\" , \"password\" : \"123456\" , \"tags\" : [ { \"_id\" : \"eat\" , \"icon\" : <Binary Data> , \"enabled\" : true} , { \"_id\" : \"sleep\" , \"icon\" : <Binary Data> , \"enabled\" : false} , { \"_id\" : \"code\" , \"icon\" : <Binary Data> , \"enabled\" : false}] , \"session\" : { \"_id\" : \"myRandomlyGeneratedSessionHash\"}}"
+      val expected = "{ \"_id\" : \"dan\" , \"password\" : \"12345678\" , \"tags\" : [ { \"_id\" : \"eat\" , \"icon\" : <Binary Data> , \"enabled\" : true} , { \"_id\" : \"sleep\" , \"icon\" : <Binary Data> , \"enabled\" : false} , { \"_id\" : \"code\" , \"icon\" : <Binary Data> , \"enabled\" : false}]}"
       assert(expected === userDbObject.toString)
     }
 
@@ -96,9 +99,37 @@ class TestModel extends FunSpec {
     }
   }
 
-  describe("An transaction instance"){
+  describe("An session instance") {
+    it("should be creatable from a json string using json4s"){
+      val parsableInput = JsonMethods.parse("{\"hash\" : \"asdf\", \"user\" : \"dan\",  \"acquiredAt\" : {\"jsonClass\" : \"DateTime\", \"$date\" : \"2014-09-01T15:39:42.218Z\"} }")
+      val session: Session = Extraction.extract[Session](parsableInput)
+      assert("asdf" === session.hash)
+      assert("dan" === session.user)
+      assert(fixtureTime === session.acquiredAt)
+    }
 
-    DateTimeZone.setDefault(DateTimeZone.UTC)
+    it("should be serializable to mongo db object using salat"){
+      val fixtureSession = Session("username")
+      val sessionAsDbObject: Imports.DBObject = grater[Session].asDBObject(fixtureSession)
+      assert(fixtureSession.hash === sessionAsDbObject.get("_id"))
+      assert("username" === sessionAsDbObject.get("user"))
+      assert(fixtureSession.acquiredAt === sessionAsDbObject.get("acquiredAt"))
+    }
+
+    it("should be createable from a MongoDbObject") {
+      val idValue: String = "myhashValue"
+      val user: String = "theReferncedUserName"
+      val db: commons.Imports.DBObject = (MongoDBObject.newBuilder += ("_id" -> idValue)
+                                                                   += ("user" -> user)
+                                                                   += ("acquiredAt" -> fixtureTime)).result()
+      val comparable: Session = grater[Session].asObject(db)
+      assert(idValue === comparable.hash)
+      assert(user === comparable.user)
+      assert(fixtureTime === comparable.acquiredAt)
+    }
+  }
+
+  describe("An transaction instance"){
 
     it("should check the output for lift json mapping for a transaction"){
       val t: Transaction = new Transaction("dhaeb", "bic", BigDecimal.valueOf(4000.00), List(), Option[String](null), DateTime.now())
@@ -120,10 +151,10 @@ class TestModel extends FunSpec {
     }
 
     it("should be convertable to an mongo db object using salat"){
-      val transaction: Transaction = new Transaction("dhaeb", "bic", BigDecimal.valueOf(3.14), List(), Option[String](null), new DateTime(1409585982218L))
+      val transaction: Transaction = new Transaction("dhaeb", "bic", BigDecimal.valueOf(3.14), List(), Option[String](null), fixtureTime)
       val expected = "{ \"agent\" : \"dhaeb\" , \"account\" : \"bic\" , \"amount\" : 3.14 , \"tagNames\" : [ ] , \"date\" : { \"$date\" : \"2014-09-01T15:39:42.218Z\"}}"
-      val result: String = grater[Transaction].asDBObject(transaction).toString
-      assert(expected === result)
+      val resultDbObject: Imports.DBObject = grater[Transaction].asDBObject(transaction)
+      assert(expected === resultDbObject.toString)
     }
 
   }

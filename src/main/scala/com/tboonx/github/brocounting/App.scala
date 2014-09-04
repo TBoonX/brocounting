@@ -3,12 +3,15 @@ package com.tboonx.github.brocounting
 import java.util.NoSuchElementException
 import javax.servlet.ServletContext
 
-import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.casbah.{Imports, MongoClient, MongoCollection, MongoDB}
+import com.mongodb.DBObject
+import com.mongodb.casbah.commons.{MongoDBObjectBuilder, MongoDBObject}
+import com.mongodb.casbah.Imports._
 import com.novus.salat._
 import com.novus.salat.global._
 import com.tboonx.github.brocounting.model._
+import org.joda.time.DateTime
 import org.scalatra.{CorsSupport, LifeCycle, ScalatraServlet}
+import scala.collection.mutable
 
 // JSON-related libraries
 
@@ -23,11 +26,44 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
   private val mongoPort : Int = Option(System.getProperty("mongoport")) getOrElse("27017") toInt
   private val mongoDbName = Option(System.getProperty("mongodb")) getOrElse "brocounting"
   protected val db: MongoDB = MongoClient(mongoHost, mongoPort).apply(mongoDbName)
-  
+
   options("/*") {
 	  response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
 	  response.setHeader("Access-Control-Allow-Origin", "*")
 	  response.setHeader("Access-Control-Allow-Methods", request.getHeader("Access-Control-Request-Method"))
+  }
+
+
+  def handleSession(hash : String, verifiedSession : (Session => String)): String = {
+    val sessionInDb: Option[DBObject] = checkForHash(hash)
+    if(sessionInDb.isDefined){
+      val session: Session = grater[Session].asObject(sessionInDb.get)
+      response.setHeader("hash", session.hash)
+      session.acquiredAt = DateTime.now
+      db("session").update(createIdQuery(session.hash).result(), grater[Session].asDBObject(session))
+      verifiedSession(session)
+    } else {
+      notAuthorized
+    }
+  }
+
+  def checkForHash(hash : String): Option[DBObject] = {
+    val sessionQueryObject: com.mongodb.casbah.commons.Imports.DBObject = createIdQuery(hash).result()
+    val dbSession: Option[MongoCollection#T] = db("session").findOne(sessionQueryObject)
+    if(dbSession.isDefined){
+      Option(dbSession.get)
+    } else {
+      None
+    }
+  }
+
+  def createIdQuery(givenId: String): mutable.Builder[(String, Any), com.mongodb.casbah.commons.Imports.DBObject] = {
+    MongoDBObject.newBuilder += ("_id" -> givenId)
+  }
+
+  protected def notAuthorized: String = {
+    response.setStatus(403)
+    "error, session is not valid!"
   }
 
   // Before every action runs, set the content type to be in JSON format.
@@ -63,7 +99,7 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
     db("user").insert(grater[User].asDBObject(user))
     println("finshed inserting testuser: "+user.name)
 
-    new Session("session123")
+    new Session("session123", "user", DateTime.now)
   }
 
   get("/session") {
@@ -74,41 +110,61 @@ class ScalaraRestfulApiDef extends ScalatraServlet with JacksonJsonSupport with 
   }
 }
 
-class UserService extends ScalaraRestfulApiDef {
+class UserService extends ScalaraRestfulApiDef with CRUDSupport[User] {
 
-  post("/create"){
-    val addableUser: User = parsedBody.extract[User]
-    verifyPassword(addableUser.password)
-    val addableUserAsDbObject: Imports.DBObject = grater[User].asDBObject(addableUser)
-    db("user").insert(addableUserAsDbObject)
+  override implicit val mf : Manifest[User] = Manifest.classType[User](classOf[User])
+
+  def createPWHash(pw : String) : String = {
+    MD5.hash(pw)
   }
 
-  put("/update"){
-    val updatableUser: User = parsedBody.extract[User]
-    verifyPassword(updatableUser.password)
-    val updatableUserAsDbObject: Imports.DBObject = grater[User].asDBObject(updatableUser)
-    db("user").update(MongoDBObject("_id" -> updatableUser.name), updatableUserAsDbObject, false)
+  def hashPasswordInDbObject(instance: DBObject) {
+    instance.put(passwordFieldName, createPWHash(instance.get(passwordFieldName).toString))
   }
 
-  def verifyPassword(pw : String): Unit ={
-    if(pw.size < 8){
-      response.setStatus(400)
-      throw new IllegalArgumentException("password must be at least 8 characters long")
-    }
+  override def createCallback(givenId : String, bodyInstance : User, mongoInstance : => DBObject) : String = {
+    val returnable: Session = Session(givenId)
+    val instance: DBObject = mongoInstance
+    hashPasswordInDbObject(instance)
+    db("user").insert(instance)
+    db("session").insert(grater[Session].asDBObject(returnable))
+    returnable.hash.toString
   }
 
-  delete("/delete") {
-    val deletableUser: User = parsedBody.extract[User]
-    val users = db("user")
-    val deletableUserAsMongoObject: Imports.DBObject = grater[User].asDBObject(deletableUser)
-    val deletableInDB: MongoCollection#T = users.findOne(MongoDBObject("_id" -> deletableUser.name)).get
-    if(deletableUser.password == deletableInDB.get("password")){
-      users.remove(deletableUserAsMongoObject)
+  override def readCallback(givenId : String) : String = {
+    val hash: String = params("hash")
+    handleSession(hash, { session =>
+      val query: com.mongodb.casbah.commons.Imports.DBObject = createIdQuery(givenId).result()
+      db("user").findOne(query, MongoDBObject(passwordFieldName -> 0)).get.toString
+    })
+  }
+
+  override def updateCallback(givenId: String, bodyInstance : => User, mongoInstance : => DBObject) : String = {
+    handleSession(params("hash"), { session =>
+      val pwHash: String = params("pw_hash")
+      val instance: DBObject = mongoInstance
+      hashPasswordInDbObject(instance)
+      db("user").update(buildUserQuery(givenId, pwHash), instance).toString
+    })
+  }
+  
+  override def deleteCallback(givenId: String): String = {
+    val sessionHash: String = params("hash")
+    val sessionInDb: Option[DBObject] = checkForHash(sessionHash)
+    if(sessionInDb.isDefined){
+      val pwHash: String = params("pw_hash")
+      val users = db("user")
+      users.remove(buildUserQuery(givenId, pwHash)).toString   
     } else {
-      response.setStatus(403)
-      new IllegalArgumentException("The password was not correct!")
+      notAuthorized
     }
   }
+
+  def buildUserQuery(userName: String, pwHash: String) = {
+    val userQueryBuilder = createIdQuery(userName) += (passwordFieldName -> pwHash)
+    userQueryBuilder.result()
+  }
+
 }
 
 class AccountService extends ScalaraRestfulApiDef {

@@ -2,48 +2,45 @@ package com.tboonx.github.brocounting
 
 import com.mongodb.DBObject
 import com.novus.salat._
-import org.json4s.Formats
-import org.scalatra.{CorsSupport, ScalatraServlet}
-import org.scalatra.json.JacksonJsonSupport
 import com.novus.salat.global._
-
+import org.json4s.Formats
+import org.scalatra.json.JacksonJsonSupport
+import org.scalatra.{CorsSupport, ScalatraServlet}
 
 trait HttpMethodSupport extends ScalatraServlet {
-  final val path = "/:%s"
+  val path = "/:%s"
   val resource : String = "id"
   val method : String
   def pathOfResource = path.format(resource)
 }
 
-
 trait CreateMethodSupport[T <: AnyRef] extends HttpMethodSupport with JacksonJsonSupport {
-  implicit val mf : Manifest[T] = manifest[T]
+  implicit val mf : Manifest[T]
   implicit val jsonFormats : Formats
   override val method = "POST"
   def createCallback(givenId : String, bodyInstance : T, mongoInstance : => DBObject) : String
   post(pathOfResource){
     val creatable = parsedBody.extract[T](jsonFormats, mf)
-    createCallback(resource, creatable, grater[T].asDBObject(creatable))
+    createCallback(params(resource), creatable, grater[T].asDBObject(creatable))
   }
 }
 
 trait ReadMethodSupport extends HttpMethodSupport {
   override val method = "GET"
-  def getCallback(givenId : String) : String
+  def readCallback(givenId : String) : String
   get(pathOfResource) {
-    getCallback(params(resource))
+    readCallback(params(resource))
   }
 }
 
-
 trait UpdateMethodSupport[T <: AnyRef] extends HttpMethodSupport with JacksonJsonSupport with CorsSupport {
-  implicit val mf : Manifest[T] = manifest[T]
+  implicit def mf : Manifest[T]
   implicit val jsonFormats : Formats
   override val method = "PUT"
-  def updateCallback(givenId : String, bodyInstance : T, mongoInstance : => DBObject) : String
+  def updateCallback(givenId : String, bodyInstance : => T, mongoInstance : => DBObject) : String
   put(pathOfResource){
-    val updatable = parsedBody.extract[T](jsonFormats, mf)
-    updateCallback(resource, updatable, grater[T].asDBObject(updatable))
+    def updatable = parsedBody.extract[T](jsonFormats, mf)
+    updateCallback(params(resource), updatable, grater[T].asDBObject(updatable))
   }
 }
 
@@ -56,5 +53,5 @@ trait DeleteMethodSupport extends HttpMethodSupport {
 }
 
 trait CRUDSupport[T <: AnyRef] extends HttpMethodSupport with CreateMethodSupport[T] with ReadMethodSupport with UpdateMethodSupport[T] with DeleteMethodSupport{
-  override implicit val mf : Manifest[T] = manifest[T]
+  override implicit val mf : Manifest[T]
 }

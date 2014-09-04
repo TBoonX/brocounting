@@ -32,4 +32,23 @@ package object model {
   }
 
   final implicit val jsonFormats: Formats = DefaultFormats.withHints(dateTimeHint)
+
+  val passwordFieldName: String = "password"
+
+  com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers()
+
+  object MD5 {
+    val m = java.security.MessageDigest.getInstance("MD5")
+    def hash(s: String) : String = {
+      val b : Array[Byte] = s.getBytes("UTF-8")
+      hash(b)
+    }
+
+    def hash(b : Array[Byte]): String = {
+      m.update(b, 0, b.length)
+      val returnable: String = new java.math.BigInteger(1, m.digest()).toString(16)
+      m.reset()
+      returnable
+    }
+  }
 }
