@@ -44,35 +44,35 @@ class TestModel extends FunSpec {
     }
   }
 
-  describe("A user instance") {
+  describe("An user instance") {
 
     val parsedInput: JValue = JsonMethods.parse("{\"name\":\"dab\",\"password\":\"12345678\" }", true)
 
-    it("should be compilable to json without sepecifying an session hash"){
+    it("should be compilable to json without username"){
       val fixtureWithoutHash = parsedInput.removeField( (value : JField) =>  {
-        "session".equals(value._1)
+        "name".equals(value._1)
       })
       val user: User = Extraction.extract[User](fixtureWithoutHash)
-      assert("dab" === user.name)
+      assert(None == user.name)
       assert("12345678" === user.password)
       assert(List() === user.tags)
     }
 
     it("should be serializable to a mongo object without session and tags"){
-      val user : User = new User("dab", "12345678", List())
+      val user : User = new User(Option("dab"), "12345678", List())
       val expected = "{ \"_id\" : \"dab\" , \"password\" : \"12345678\" , \"tags\" : [ ]}"
       assert(expected === grater[User].asDBObject(user).toString)
     }
 
     it("should be compilable to json using scalatra-json") {
       val user: User = Extraction.extract[User](parsedInput)
-      assert(user.name === "dab")
+      assert(user.name.get === "dab")
       assert(user.password === "12345678")
       assert(user.tags === List())
     }
 
     it("should be serializable to a mongo db object using salat"){
-      val user : User = new User("dan", "12345678", List(new Tag("eat", Array(), true), new Tag("sleep", Array(), false), new Tag("code", Array(), false)))
+      val user : User = new User(Option("dan"), "12345678", List(new Tag("eat", Array(), true), new Tag("sleep", Array(), false), new Tag("code", Array(), false)))
       val userDbObject: Imports.DBObject = grater[User].asDBObject(user)
       val expected = "{ \"_id\" : \"dan\" , \"password\" : \"12345678\" , \"tags\" : [ { \"_id\" : \"eat\" , \"icon\" : <Binary Data> , \"enabled\" : true} , { \"_id\" : \"sleep\" , \"icon\" : <Binary Data> , \"enabled\" : false} , { \"_id\" : \"code\" , \"icon\" : <Binary Data> , \"enabled\" : false}]}"
       assert(expected === userDbObject.toString)
@@ -111,7 +111,7 @@ class TestModel extends FunSpec {
     it("should be serializable to mongo db object using salat"){
       val fixtureSession = Session("username")
       val sessionAsDbObject: Imports.DBObject = grater[Session].asDBObject(fixtureSession)
-      assert(fixtureSession.hash === sessionAsDbObject.get("_id"))
+      assert(fixtureSession.hash === sessionAsDbObject.get("hash"))
       assert("username" === sessionAsDbObject.get("user"))
       assert(fixtureSession.acquiredAt === sessionAsDbObject.get("acquiredAt"))
     }
@@ -119,9 +119,11 @@ class TestModel extends FunSpec {
     it("should be createable from a MongoDbObject") {
       val idValue: String = "myhashValue"
       val user: String = "theReferncedUserName"
-      val db: commons.Imports.DBObject = (MongoDBObject.newBuilder += ("_id" -> idValue)
+      val db: commons.Imports.DBObject = (MongoDBObject.newBuilder += ("hash" -> idValue)
                                                                    += ("user" -> user)
-                                                                   += ("acquiredAt" -> fixtureTime)).result()
+                                                                   += ("acquiredAt" -> fixtureTime)
+                                                                   += ("_id" -> new ObjectId)).result()
+
       val comparable: Session = grater[Session].asObject(db)
       assert(idValue === comparable.hash)
       assert(user === comparable.user)

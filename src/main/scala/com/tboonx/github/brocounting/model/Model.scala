@@ -10,8 +10,8 @@ import scala.util.Random
  * Created by dhaeb on 31.08.14.
  */
 
-case class User(@Key("_id") name: String, password: String, tags: List[Tag]){
-  def verifyPassword(): Unit ={
+case class User(@Key("_id") name: Option[String], password: String, tags: List[Tag]){
+  def verifyPassword(): Unit = {
     if(password.size < 8){
       throw new IllegalArgumentException("password must be at least 8 characters long")
     }
@@ -36,7 +36,7 @@ object Session {
   def apply(user : String) = new Session(MD5.hash(Session.createRandomByteArray()), user, DateTime.now)
 }
 
-case class Session(@Key("_id") hash: String, user : String, var acquiredAt : DateTime)
+case class Session(hash: String, user : String, var acquiredAt : DateTime)
 
 case class Tag(@Key("_id") name: String, icon: Array[Byte], enabled: Boolean)
 
