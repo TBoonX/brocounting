@@ -1,4 +1,4 @@
-<h1>Transaktion {{transaction.id}}</h1>
+<h1>{{tc.header}}</h1>
 <hr>
 
 <form name="transactionForm" ng-submit="transactionForm.$valid && tc.save()" novalidate>
@@ -7,14 +7,28 @@
         <input id="trans_account" type="text" name="account" ng-model="" title="Konto" ng-show="transaction.id" />
     </fieldset>
     <fieldset class="form-group">
-        <label for="trans_date">Datum:</label>
-        <input id="trans_date" type="date" name="date" ng-model="transaction.dated" title="Datum" required/>
+        <label for="trans_amount">Betrag:</label>
+        <input id="trans_amount" type="number" name="amount" ng-model="transaction.amount" title="Betrag" required/>
     </fieldset>
     <fieldset class="form-group">
-        <input type="submit" value="Login" name="submit" />
+        <label for="trans_date">Datum:</label>
+        <input id="trans_date" type="date" name="date" ng-model="transaction.date" title="Datum" required/>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="trans_note">Vermerk:</label>
+        <input id="trans_note" type="note" name="note" ng-model="transaction.note" title="Vermerk" required/>
+    </fieldset>
+    <fieldset class="form-group">
+        <label>Tags:</label>
+        <div ng-repeat="tag in transaction.tags">
+            <input type="button" class="tagBtn" title="Tag: {{tag}}" name="tagBtn" ng-click="tc.tagClicked(tag)"
+        </div>
+        <input>
+            <button class="newTagBtn" title="Neuer Tag" name="newTagBtn" type="button" ng-click="tc.newTag()" value="Neuer Tag" />
+        </input>
+    </fieldset>
+    <br>
+    <fieldset class="form-group">
+        <input type="submit" name="saveBtn" class="saveBtn" value="Speichern" title="Speichern" />
     </fieldset>
 </form>
-
-<input>
-    <button class="saveBtn" title="Speichern" name="saveBtn" type="button" ng-onClick="" value="Speichern" />
-</input>

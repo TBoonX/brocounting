@@ -212,8 +212,6 @@ app.factory('StatisticRes', ['$resource', '$localStorage',
 //loading all data - init
 app.service('InitialLoad', ['$localStorage', '$rootScope', 'AccountRes', 'TagRes', 'TransactionRes', 
     function ($localStorage, $rootScope, AccountRes, TagRes, TransactionRes) {
-        console.log('initial load of all data');
-
         var hash = $localStorage.hash;
 
         //get Accounts
@@ -286,6 +284,10 @@ app.service('InitialLoad', ['$localStorage', '$rootScope', 'AccountRes', 'TagRes
         };
 
         this.start = function() {
+            console.log('initial load of all data');
+            
+            hash = $localStorage.hash;
+            
             this.getAccounts();
             this.getTags();
             this.getTransactions();

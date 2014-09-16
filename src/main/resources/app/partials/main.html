@@ -1,7 +1,7 @@
 <div name="accountsDiv">
     <hr>
     <marquee scrollamount="2" scrolldelay="7" direction="left">
-      <div ng-repeat="account in $storage.allAccounts"><b>{{account.bic}}:</b> {{account.balance| currency}}     </div>
+      <div ng-repeat="account in $storage.allAccounts"><b>{{account.bic}}:</b> {{account.balance | currency}}     </div>
     </marquee>
     <hr>
 </div>
@@ -11,9 +11,7 @@
         <table class="table">
             <tr>
                 <td>
-                    <div ng-repeat="tagName in transacion.tagNames">
-                        <tag-icon tag-name="{{tagName}}" />{{tagName}}, {{transaction.date}}, {{transaction.amount | currency}}
-                    </div>
+                    <div ng-repeat="tagName in transaction.tagNames"><tag-icon tag-name="{{tagName}}" />{{tagName}}, </div>{{transaction.date}}, {{transaction.amount | currency}}
                 </td>
             </tr>
         </table>

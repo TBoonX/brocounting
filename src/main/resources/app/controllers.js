@@ -19,6 +19,7 @@ app.controller('MainCtrl', ['$http', '$scope', '$rootScope', '$location', 'Sessi
         var onError = function () {
 
             //TODO: show hint
+            alert("Sie müssen sich einloggen!");
 
             $location.path('/login');
         };
@@ -81,8 +82,8 @@ app.controller('LoginCtrl', ['$rootScope', 'Login',
         this.login = Login.start;
 }]);
 
-app.controller('TransactionCtrl', ['$http', '$scope', '$routeParams', '$localStorage',
-    function ($http, $scope, $routeParams, $localStorage) {
+app.controller('TransactionCtrl', ['$http', '$scope', '$routeParams', '$localStorage', 'TransactionRes', '$location',
+    function ($http, $scope, $routeParams, $localStorage, TransactionRes, $location) {
         var transactionId = $routeParams.transactionId;
         $scope.transaction = {};
         
@@ -98,8 +99,61 @@ app.controller('TransactionCtrl', ['$http', '$scope', '$routeParams', '$localSto
         }
         
         this.save = function() {
-            //TODO   
-        }
+            console.log("save transaction");
+            
+            if ($scope.transaction.id != null && $scope.transaction.id != undefined)
+            {
+                TransactionRes.create({transaction: $scope.transaction}, function (value, responseHeaders) {
+                    console.log('success');
+
+                    console.log(value);
+
+                    if (value.response === undefined || value.response === false)
+                        alert(responseHeaders);
+                    else {
+                        $location.path('/');
+                    }
+                },
+                function (httpResponse) {
+                    console.log('failure');
+
+                    alert(httpResponse);
+                });
+            }
+            else
+            {
+                TransactionRes.update({transaction: $scope.transaction}, function (value, responseHeaders) {
+                    console.log('success');
+
+                    console.log(value);
+
+                    if (value.response === undefined || value.response === false)
+                        alert(responseHeaders);
+                    else {
+                        $location.path('/');
+                    }
+                },
+                function (httpResponse) {
+                    console.log('failure');
+
+                    alert(httpResponse);
+                });
+            }
+        };
+        
+        if (this.transaction !== null && this.transaction !== undefined)
+            this.header = "Transaktion "+this.transaction;
+        else
+            this.header = "Neue Transaktion";
+        
+        this.tagClicked = function(tag) {
+            //only remove tag
+            $scope.transaction.tags.pop(tag);
+        };
+        
+        this.newTag = function() {
+            //TODO
+        };
 }]);
 
 app.controller('RegistrationCtrl', ['$http', '$scope',
