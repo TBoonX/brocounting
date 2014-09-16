@@ -46,7 +46,8 @@ app.config(['$routeProvider',
       }).
       when('/tags', {
         templateUrl: 'app/partials/tags.html',
-        controller: 'TagsCtrl'
+        controller: 'TagsCtrl',
+          controllerAs: 'tc'
       }).
       when('/tag/:tagId', {
         templateUrl: 'app/partials/tag.html',

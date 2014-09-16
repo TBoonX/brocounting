@@ -2,7 +2,7 @@
 <hr>
 
 <form name="transactionForm" ng-submit="transactionForm.$valid && tc.save()" novalidate>
-    <fieldset class="form-group">
+    <fieldset class="form-group" ng-show="transaction.id !== null && transaction.id !== undefined">
         <label for="trans_account">Konto:</label>
         <input id="trans_account" type="text" name="account" ng-model="" title="Konto" ng-show="transaction.id" />
     </fieldset>

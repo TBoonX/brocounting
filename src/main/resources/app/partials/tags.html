@@ -12,15 +12,11 @@
                     {{tag.name}}
                 </td>
                 <td>
-                    <input>
-                        <option title="Aktiviert" label="Aktiviert" class="radioBtn" name="enabledRadio" selected />
-                    </input>
+                    <input type="checkbox" title="Aktiviert" label="Aktiviert" class="radioBtn" ng-model="tag.enabled" checked >
                 </td>
             </tr>
         </div>  
     </table>
 </div>
 
-<input>
-    <button class="plusBtn" title="Hinzufuegen" name="plusBtn" type="button" ng-onClick="" value="Speichern" />
-</input>
+<button class="addBtn" title="Hinzufuegen" name="addBtn" type="button" ng-click="add" value="Hinzufuegen" />
